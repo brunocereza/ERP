@@ -10,9 +10,7 @@ export default class home extends Component {
         verticalAlign="middle"
         container
       >
-        <Grid.Column style={{ maxWidth: 450 }}>
-          {/* <Image src={logoApp} fluid size="medium" centered /> */}
-        </Grid.Column>
+        <Grid.Column style={{ maxWidth: 450 }}></Grid.Column>
       </Grid>
     );
   }
