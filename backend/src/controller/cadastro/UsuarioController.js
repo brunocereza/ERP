@@ -38,6 +38,7 @@ module.exports = {
       });
   },
   async autenticacao(req, res) {
+    console.log(req.body);
     const { login, senha } = req.body;
     const prisma = new PrismaClient({
       datasources: {
