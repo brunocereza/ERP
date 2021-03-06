@@ -3,7 +3,6 @@ import {
   Grid,
   Header,
   Form,
-  Button,
   FormField,
   Message,
   Segment,
@@ -19,9 +18,12 @@ import get from "lodash/get";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import api from "../services/api";
+
 import InputMask from "react-input-mask";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import "./styles.css";
 const defaultFormShape = {
   senha: "",
   login: "",
@@ -38,7 +40,7 @@ class Login extends Component {
       listaCadastros: [],
       listaCadastrosView: [],
       listaEntidadesView: [],
-      opcao_cadastrar: "",
+      clube_opcao_cadastrar: "",
       nome_cadastro: "",
       login_cadastro: "",
       loginInvalido: false,
@@ -58,17 +60,14 @@ class Login extends Component {
       })
       .then(async (resposta) => {
         var localStorage = window.localStorage;
-        localStorage.setItem("token", resposta.data.token);
-        localStorage.setItem("entidade", resposta.data.usuario.entidade);
+        localStorage.setItem("token_clube", resposta.data.token);
+        localStorage.setItem("e_clube", resposta.data.usuario.entidade);
         localStorage.setItem(
-          "tipo_usuario",
+          "tipo_usuario_clube",
           resposta.data.usuario.tipo_usuario
         );
-        localStorage.setItem(
-          "tipo",
-          resposta.data.tipo_cliente
-        );
-        if (resposta.data.usuario.tipo_usuario === "desenvolvimento") {
+        localStorage.setItem("tipo_clube", resposta.data.tipo_clube);
+        if (resposta.data.usuario.tipo_usuario === "administradorSistema") {
           window.location.href = "/entidade/lista";
         } else {
           window.location.reload();
@@ -92,7 +91,7 @@ class Login extends Component {
     }
 
     // var localStorage = window.localStorage;
-
+    // var entidade = localStorage.getItem("e_clube");
     var pessoas = [];
     await api
       .post("pessoa/buscaCpfCnpjTodasEntidade?e=public", {
@@ -140,6 +139,7 @@ class Login extends Component {
         .then((resposta) => {
           let a = {
             entidade: pessoas.data[i].entidade,
+            nomeClube: pessoas.data[i].nomeClube,
             pessoa_id: element.id,
             nome: element.nome,
             cpf: element.cpf,
@@ -183,7 +183,7 @@ class Login extends Component {
       const element = this.state.listaCadastros[i];
 
       if (this.state.listaCadastros.length === 1) {
-        this.setState({ opcao_cadastrar: element.entidade });
+        this.setState({ clube_opcao_cadastrar: element.entidade });
       }
       if (
         verificaBaseTeste &&
@@ -200,14 +200,14 @@ class Login extends Component {
         contEmail++;
         listaEntidadesView.push(
           <option key={maxItens * i + 4} value={element.entidade}>
-            {element.nome}
+            {element.nomeClube}
           </option>
         );
       }
 
       listaCadastrosView.push(<Divider key={maxItens * i}></Divider>);
       listaCadastrosView.push(
-        <h4 key={maxItens * i + 1}>Cliente cadastrado: {element.nome}</h4>
+        <h4 key={maxItens * i + 1}>Clube cadastrado: {element.nomeClube}</h4>
       );
       listaCadastrosView.push(
         <p key={maxItens * i + 2}>
@@ -246,7 +246,7 @@ class Login extends Component {
 
     var tipoTitulo = "";
     var pessoaId = 0;
-    var entidade = this.state.opcao_cadastrar;
+    var entidade = this.state.clube_opcao_cadastrar;
     for (let i = 0; i < this.state.listaCadastros.length; i++) {
       const element = this.state.listaCadastros[i];
       if (element.entidade === entidade) {
@@ -334,309 +334,75 @@ class Login extends Component {
           handleBlur,
           handleSubmit,
         }) => (
-          <Grid
-            textAlign="center"
-            style={{ height: "100vh" }}
-            verticalAlign="middle"
-            container
-          >
-            <Grid.Column style={{ maxWidth: 450 }}>
-              {/* <Image src={logoApp} fluid size="small" centered /> */}
-              <Header as="h1" color="blue" textAlign="center"></Header>
-              <Form
-                onSubmit={handleSubmit}
-                loading={this.props.loading}
-                size="large"
-              >
-                <Segment raised>
-                  <FormField>
-                    <Input
-                      placeholder="Login"
-                      icon="user"
-                      iconPosition="left"
-                      fluid
-                      name="login"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      values={values.email}
-                    />
-                    {get(touched, "login") && get(errors, "login") && (
-                      <Message negative size="mini">
-                        {errors.login}
-                      </Message>
-                    )}
-                  </FormField>
-                  <FormField>
-                    <Input
-                      placeholder="Senha"
-                      icon="lock"
-                      iconPosition="left"
-                      fluid
-                      type="password"
-                      name="senha"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      values={values.senha}
-                    />
-                    {get(touched, "senha") && get(errors, "senha") && (
-                      <Message negative size="mini">
-                        {errors.senha}
-                      </Message>
-                    )}
-                  </FormField>
-                  {this.state.loginInvalido === true ? (
-                    this.state.errorMessage !== "" ? (
-                      <Message negative>{this.state.errorMessage}</Message>
-                    ) : (
-                      <Message negative>Login Inválido!</Message>
-                    )
-                  ) : null}
-                  <Button fluid primary type="submit" size="large">
-                    Login
-                  </Button>
-
-                  <FormField style={{ marginTop: "10px" }}>
-                    <Link to={{ pathname: "/esqueceuSenha" }}>
-                      Esqueceu a senha?
-                    </Link>
-                  </FormField>
-
-                  <Divider />
-
-                  <FormField style={{ marginTop: "25px" }}>
-                    <Button
-                      fluid
-                      color="green"
-                      type="button"
+          <div className="login">
+            <Grid columns={2}>
+              <Grid.Row>
+                <Grid.Column>
+                  <Segment column className="login-inputright">
+                    <Form
+                      onSubmit={handleSubmit}
+                      loading={this.props.loading}
                       size="large"
-                      onClick={() => {
-                        this.setState({ openCadastrarUsuario: true });
-                      }}
                     >
-                      Cadastrar
-                    </Button>
-                  </FormField>
-                </Segment>
-              </Form>
-
-              <Modal
-                open={this.state.openCadastrarUsuario}
-                onClose={() => {
-                  this.setState({ openCadastrarUsuario: false });
-                }}
-                style={{ width: "40%" }}
-              >
-                <Header content="Cadastrar Usuário" />
-                <Modal.Content>
-                  <Form
-                    onSubmit={this.buscaUserCpf_Cnpj}
-                    style={{
-                      width: "80%",
-                      maxWidth: "600px",
-                      marginLeft: "auto",
-                      marginRight: "auto",
-                    }}
-                  >
-                    <h4>Digite o seu CPF:</h4>
-                    <Row>
-                      <Col>
-                        <FormField>
-                          <InputMask
-                            placeholder="CPF"
-                            name="cpf"
+                      <div className="login-left">
+                        <h1 className="title"> BEM VINDO !</h1>
+                        <div className="login-user">
+                          <input
+                            placeholder="Login"
+                            icon="user"
+                            iconPosition="left"
+                            fluid
+                            name="login"
                             onBlur={handleBlur}
-                            onChange={(event) => {
-                              this.setState({
-                                cpf_cnpj: event.target.value,
-                                cadastroNotFound: false,
-                              });
-                            }}
-                            values={this.state.cpf_cnpj}
-                            mask="999.999.999-99"
+                            onChange={handleChange}
+                            values={values.email}
                           />
-
-                          {this.state.selectedOption === "juridica" ? (
-                            <InputMask
-                              placeholder="CNPJ"
-                              name="cnpj"
-                              onBlur={handleBlur}
-                              onChange={(event) => {
-                                this.setState({
-                                  cpf_cnpj: event.target.value,
-                                  cadastroNotFound: false,
-                                });
-                              }}
-                              values={values.cnpj}
-                              mask="99.999.999/9999-99"
-                            />
+                        </div>
+                        <div className="login-senha">
+                          <input
+                            placeholder="Senha"
+                            icon="lock"
+                            iconPosition="left"
+                            fluid
+                            type="password"
+                            name="senha"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            values={values.senha}
+                          />
+                        </div>
+                        <div className="buttonlogin">
+                          {this.state.loginInvalido === true ? (
+                            this.state.errorMessage !== "" ? (
+                              <Message negative>
+                                {this.state.errorMessage}
+                              </Message>
+                            ) : (
+                              <Message negative>Login Inválido!</Message>
+                            )
                           ) : null}
-                        </FormField>
-                      </Col>
-                      <Col>
-                        <Button type="submit" fluid color="blue" size="large">
-                          Buscar
-                        </Button>
-                      </Col>
-                    </Row>
-                    {this.state.cadastroNotFound === true ? ( //this.state.selectedOption !== "" &&
-                      <Message negative>Cadastro não encontrado.</Message>
-                    ) : null}
-                  </Form>
-                  {this.state.listaCadastros.length > 0 ? (
-                    <Container
-                      style={{
-                        width: "80%",
-                        maxWidth: "600px",
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                        padding: "0",
-                      }}
-                    >
-                      {this.state.listaCadastrosView}
-                    </Container>
-                  ) : null}
+                          <Button
+                            style={{ outline: "none" }}
+                            color="primary"
+                            type="submit"
+                            size="large"
+                          >
+                            Login
+                          </Button>
+                        </div>
+                      </div>
+                    </Form>
+                  </Segment>
+                </Grid.Column>
 
-                  <Form
-                    style={{
-                      width: "80%",
-                      marginLeft: "auto",
-                      marginRight: "auto",
-                      marginTop: "30px",
-                      padding: "0",
-                    }}
-                    onSubmit={this.cadastrarUsuario}
-                  >
-                    {this.state.listaCadastros.length > 0 ? (
-                      <Container style={{ padding: "0" }}>
-                        <h4>Em qual Cliente você deseja se cadastrar?</h4>
-                        <select
-                          onChange={(event) => {
-                            this.setState({
-                              opcao_cadastrar: event.target.value,
-                            });
-                          }}
-                          defaultValue={this.state.opcao_cadastrar}
-                        >
-                          {this.state.listaEntidadesView}
-                        </select>
-                        <Input
-                          placeholder="Nome"
-                          icon="user"
-                          iconPosition="left"
-                          fluid
-                          name="nome"
-                          onBlur={handleBlur}
-                          disabled={true}
-                          onChange={(event) => {
-                            this.setState({
-                              nome_cadastro: event.target.value,
-                            });
-                          }}
-                          values={this.state.nome_cadastro}
-                          defaultValue={this.state.nome_cadastro}
-                          style={{ marginTop: "10px" }}
-                        />
-                        <Input
-                          placeholder="Login"
-                          icon="at"
-                          iconPosition="left"
-                          fluid
-                          name="login"
-                          onBlur={(event) => {
-                            this.setState({
-                              login_cadastro: event.target.value,
-                            });
-                          }}
-                          onChange={(event) => {
-                            this.setState({
-                              login_cadastro: event.target.value,
-                              loginInvalido: false,
-                              tipoUsuarioInvalido: false,
-                              emailNaoCadastrado: false,
-                            });
-                          }}
-                          values={this.state.login_cadastro}
-                          defaultValue={this.state.login_cadastro}
-                          style={{ marginTop: "10px" }}
-                        />
-                        {this.state.loginInvalido === true ? (
-                          <Message negative>Login já cadastrado!</Message>
-                        ) : null}
-                        {this.state.problemaCadastro === true ? (
-                          <Message negative>
-                            Problema ao gerar a senha do usuário.
-                          </Message>
-                        ) : null}
-                        {this.state.sucessoCadastro === true ? (
-                          <Message positive>
-                            Cadastro efetuado com sucesso!
-                          </Message>
-                        ) : null}
-                        {this.state.sucessoCadastro && (
-                          <Container
-                            style={{
-                              fontSize: "16px",
-                              marginTop: "16px",
-                              marginBottom: "16px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            Verifique seu email.
-                          </Container>
-                        )}
-                        {this.state.tipoUsuarioInvalido && (
-                          <Message negative>
-                            Cadastro deste tipo de título não suportado. Entre
-                            em contato com o setor administrativo.
-                          </Message>
-                        )}
-                        {this.state.emailNaoCadastrado && (
-                          <Message negative>
-                            Nenhum email cadastrado. Impossível enviar email com
-                            a senha do usuário.
-                          </Message>
-                        )}
-                        {this.state.sucessoCadastro === false &&
-                        this.state.loginInvalido === false &&
-                        this.state.problemaCadastro === false &&
-                        this.state.clicouCadastrar === true ? (
-                          <Container
-                            style={{
-                              marginTop: "30px",
-                              marginBottom: "30px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <CircularProgress />
-                          </Container>
-                        ) : null}
-                        <Button
-                          type="submit"
-                          color="green"
-                          fluid
-                          size="large"
-                          style={{ marginTop: "15px" }}
-                          disabled={
-                            this.state.opcao_cadastrar === "" ||
-                            this.state.login_cadastro == "" ||
-                            this.state.nome_cadastro == "" ||
-                            this.state.clicouCadastrar ||
-                            this.state.emailNaoCadastrado
-                          }
-                        >
-                          Cadastrar
-                        </Button>
-                      </Container>
-                    ) : null}
-                  </Form>
-                </Modal.Content>
-              </Modal>
-            </Grid.Column>
-          </Grid>
+                <Grid.Column>
+                  <Segment column className="login-inputleft">
+                    <Form></Form>
+                  </Segment>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </div>
         )}
       />
     );

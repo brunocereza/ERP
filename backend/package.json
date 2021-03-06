@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@prisma-multi-tenant/client": "2.4.2",
+    "@prisma/client": "^2.18.0",
     "@types/node": "^14.14.31",
     "babel-node": "^0.0.1-security",
     "bcryptjs": "^2.4.3",
