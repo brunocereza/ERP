@@ -57,6 +57,7 @@ class Login extends Component {
         senha: values.senha,
       })
       .then(async (resposta) => {
+        console.log(resposta);
         var localStorage = window.localStorage;
         localStorage.setItem("token", resposta.data.token);
         localStorage.setItem("entidade", resposta.data.usuario.entidade);
@@ -74,10 +75,10 @@ class Login extends Component {
           window.location.reload();
         }
       })
-      .catch((e) => {
-        this.setState({ errorMessage: e.response.data.error });
-        this.setState({ loginInvalido: true });
-      });
+      // .catch((e) => {
+      //   this.setState({ errorMessage: e.response.data.error });
+      //   this.setState({ loginInvalido: true });
+      // });
   };
 
   buscaUserCpf_Cnpj = async (values) => {

@@ -38,7 +38,6 @@ module.exports = {
       });
   },
   async autenticacao(req, res) {
-    console.log(req.body);
     const { login, senha } = req.body;
     const prisma = new PrismaClient({
       datasources: {
@@ -60,6 +59,6 @@ module.exports = {
 
     const token = jwt.sign({ id: usuario.id }, authConfig.secret);
 
-    res.send({token});
+    res.send({token, usuario});
   }
 };

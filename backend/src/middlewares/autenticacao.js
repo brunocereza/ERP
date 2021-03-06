@@ -3,7 +3,6 @@ const authConfig = require("../config/auth.json");
 
 module.exports = (req, res, next) => {
   if(req.url !== "/usuario/autenticacao?e=public") {
-    console.log(req.url)
     let authHeader = '';
     if (!req.headers.token) {
       authHeader = req.query.t;
