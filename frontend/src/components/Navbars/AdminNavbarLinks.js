@@ -19,13 +19,11 @@ import Search from "@material-ui/icons/Search";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
-import routes from "routes.js";
 
 const useStyles = makeStyles(styles);
 
 export default function AdminNavbarLinks(props) {
   const classes = useStyles();
-  const { color, logo, image, logoText, routes } = props;
   const [openNotification, setOpenNotification] = React.useState(null);
   const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickNotification = event => {

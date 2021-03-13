@@ -91,17 +91,17 @@ class Login extends Component {
 
     this.setState({ nome_cadastro: pessoas.data.nome });
 
-    for (let i = 0; i < pessoas.data.length; i++) {
-      const element = pessoas.data[i];
 
+    let element = [];
+    pessoas.data.forEach(async pessoa => {
       await api
         .post("/usuario/usuariosPorPessoa?e=public", {
-          id: element.id,
-          entidade: pessoas.data[i].entidade,
+          id: pessoa.id,
+          entidade: pessoa.entidade,
         })
         .then((resposta) => {
           let a = {
-            entidade: pessoas.data[i].entidade,
+            entidade: pessoa.entidade,
             pessoa_id: element.id,
             nome: element.nome,
             cpf: element.cpf,
@@ -116,7 +116,7 @@ class Login extends Component {
           this.setState({ loginInvalido: true });
           this.setState({ errorMessage: "" });
         });
-    }
+    });
 
     var contEmail = 0;
     var listaCadastrosView = [];

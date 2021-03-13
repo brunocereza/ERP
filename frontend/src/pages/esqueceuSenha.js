@@ -8,7 +8,6 @@ import {
   Message,
   Segment,
   Input,
-  Image,
   Divider,
 } from "semantic-ui-react";
 import { Container } from "react-bootstrap";
