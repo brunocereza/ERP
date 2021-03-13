@@ -1,14 +1,10 @@
 import React, { Component } from "react";
 import ProtectedRoute from "./services/protectedRoute";
-import api from "./services/api";
-import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
-import Home from "./pages/home";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./pages/login";
 import Usuario from "./pages/cadastro/usuario/index";
 import EsqueceuSenha from "./pages/esqueceuSenha";
-import Sair from "./pages/sair";
 import Admin from "./layouts/Admin.js";
-import RTL from "./layouts/RTL.js";
 
 export default class Rotas extends Component {
   constructor(props) {
@@ -36,19 +32,19 @@ export default class Rotas extends Component {
     // let menu = <Menu />;
     var localStorage = window.localStorage;
     var token = localStorage.getItem("token");
-    var tipo_usuario = localStorage.getItem("tipo_usuario");
+    // var tipo_usuario = localStorage.getItem("tipo_usuario");
 
     return (
       <BrowserRouter>
         {token !== null && token.length > 10}
         {token !== null &&
           token.length > 10 &&
-          window.location.pathname == "/" && <Admin />}
+          window.location.pathname === "/" && <Admin />}
 
         <div
           className={
-            window.location.pathname == "/" ||
-            window.location.pathname == "/esqueceuSenha"
+            window.location.pathname === "/" ||
+            window.location.pathname === "/esqueceuSenha"
               ? ""
               : "principal"
           }
@@ -66,10 +62,7 @@ export default class Rotas extends Component {
               component={Usuario}
               menus={this.state.menus}
             />
-             <Route path="/admin" component={Admin} />
-            <Route path="/rtl" component={RTL} />
-            
-              {/* <Redirect from="/main" to="/admin/dashboard" /> */}
+            <Route path="/admin" component={Admin} />
           </Switch>
         </div>
       </BrowserRouter>

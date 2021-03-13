@@ -18,13 +18,14 @@ import Search from "@material-ui/icons/Search";
 // core components
 import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
-
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
+import routes from "routes.js";
 
 const useStyles = makeStyles(styles);
 
-export default function AdminNavbarLinks() {
+export default function AdminNavbarLinks(props) {
   const classes = useStyles();
+  const { color, logo, image, logoText, routes } = props;
   const [openNotification, setOpenNotification] = React.useState(null);
   const [openProfile, setOpenProfile] = React.useState(null);
   const handleClickNotification = event => {
@@ -37,16 +38,27 @@ export default function AdminNavbarLinks() {
   const handleCloseNotification = () => {
     setOpenNotification(null);
   };
-  const handleClickProfile = event => {
+  const handleClickPerfil = event => {
     if (openProfile && openProfile.contains(event.target)) {
       setOpenProfile(null);
     } else {
       setOpenProfile(event.currentTarget);
     }
   };
-  const handleCloseProfile = () => {
+
+  const handleClosePerfil = event =>{
     setOpenProfile(null);
-  };
+  }
+
+  const handleClickUsuario = () =>{
+    window.location.href = "/admin/usuario";
+  }
+
+  const handleClickSair = () => {
+    var localStorage = window.localStorage;
+    localStorage.setItem("token",undefined);
+    window.location.href = "/";
+  }
   return (
     <div>
       <div className={classes.searchWrapper}>
@@ -55,9 +67,9 @@ export default function AdminNavbarLinks() {
             className: classes.margin + " " + classes.search
           }}
           inputProps={{
-            placeholder: "Search",
+            placeholder: "Pesquisar",
             inputProps: {
-              "aria-label": "Search"
+              "aria-label": "Pesquisar"
             }
           }}
         />
@@ -74,7 +86,7 @@ export default function AdminNavbarLinks() {
       >
         <Dashboard className={classes.icons} />
         <Hidden mdUp implementation="css">
-          <p className={classes.linkText}>Dashboard</p>
+          <p className={classes.linkText}>Administração</p>
         </Hidden>
       </Button>
       <div className={classes.manager}>
@@ -162,12 +174,12 @@ export default function AdminNavbarLinks() {
           simple={!(window.innerWidth > 959)}
           aria-owns={openProfile ? "profile-menu-list-grow" : null}
           aria-haspopup="true"
-          onClick={handleClickProfile}
+          onClick={handleClickPerfil}
           className={classes.buttonLink}
         >
           <Person className={classes.icons} />
           <Hidden mdUp implementation="css">
-            <p className={classes.linkText}>Profile</p>
+            <p className={classes.linkText}>Perfil</p>
           </Hidden>
         </Button>
         <Poppers
@@ -191,26 +203,26 @@ export default function AdminNavbarLinks() {
               }}
             >
               <Paper>
-                <ClickAwayListener onClickAway={handleCloseProfile}>
+                <ClickAwayListener onClickAway={handleClosePerfil}>
                   <MenuList role="menu">
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={handleClickUsuario}
                       className={classes.dropdownItem}
                     >
-                      Profile
+                      Perfil
                     </MenuItem>
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      // onClick={handleClosePerfil}
                       className={classes.dropdownItem}
                     >
-                      Settings
+                      Configurações
                     </MenuItem>
                     <Divider light />
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={handleClickSair}
                       className={classes.dropdownItem}
                     >
-                      Logout
+                      Sair
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>

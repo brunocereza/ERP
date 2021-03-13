@@ -1,29 +1,11 @@
 import React, { Component } from "react";
-import {
-  Grid,
-  Header,
-  Form,
-  FormField,
-  Message,
-  Segment,
-  Input,
-  Image,
-  Divider,
-  Modal,
-  Container,
-} from "semantic-ui-react";
-import { Link } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
-import get from "lodash/get";
+import { Grid, Form, Message, Segment, Divider } from "semantic-ui-react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import api from "../services/api";
-
-import InputMask from "react-input-mask";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import "./styles.css";
+
 const defaultFormShape = {
   senha: "",
   login: "",
@@ -59,25 +41,19 @@ class Login extends Component {
         senha: values.senha,
       })
       .then(async (resposta) => {
-        console.log(resposta);
         var localStorage = window.localStorage;
-        localStorage.setItem("token_clube", resposta.data.token);
-        localStorage.setItem("e_clube", resposta.data.usuario.entidade);
+        localStorage.setItem("token", resposta.data.token);
+        localStorage.setItem("entidade", resposta.data.usuario.entidade);
         localStorage.setItem(
-          "tipo_usuario_clube",
+          "tipo_usuario",
           resposta.data.usuario.tipo_usuario
         );
-        localStorage.setItem("tipo_clube", resposta.data.tipo_clube);
-        if (resposta.data.usuario.tipo_usuario === "administradorSistema") {
+        if (resposta.data.usuario.tipo_usuario === "desenvolvimento") {
           window.location.href = "/entidade/lista";
         } else {
           window.location.reload();
         }
-      })
-      // .catch((e) => {
-      //   this.setState({ errorMessage: e.response.data.error });
-      //   this.setState({ loginInvalido: true });
-      // });
+      });
   };
 
   buscaUserCpf_Cnpj = async (values) => {
@@ -91,8 +67,6 @@ class Login extends Component {
       return;
     }
 
-    // var localStorage = window.localStorage;
-    // var entidade = localStorage.getItem("e_clube");
     var pessoas = [];
     await api
       .post("pessoa/buscaCpfCnpjTodasEntidade?e=public", {
@@ -118,20 +92,8 @@ class Login extends Component {
     this.setState({ nome_cadastro: pessoas.data.nome });
 
     for (let i = 0; i < pessoas.data.length; i++) {
-      let tipoTitulo = "";
       const element = pessoas.data[i];
 
-      //Por algum motivo, quando busca uma ação da base teste entra em loop.
-      if (!pessoas.data[i].entidade.includes("teste")) {
-        await api
-          .post("/acao/visualiza?e=" + pessoas.data[i].entidade, {
-            id: element.acao_id,
-          })
-          .then((resposta) => {
-            tipoTitulo = resposta.data.tipo_titulo.descricao;
-          })
-          .catch((e) => {});
-      }
       await api
         .post("/usuario/usuariosPorPessoa?e=public", {
           id: element.id,
@@ -140,12 +102,10 @@ class Login extends Component {
         .then((resposta) => {
           let a = {
             entidade: pessoas.data[i].entidade,
-            nomeClube: pessoas.data[i].nomeClube,
             pessoa_id: element.id,
             nome: element.nome,
             cpf: element.cpf,
             email: element.email,
-            tipoTitulo: tipoTitulo,
             usuarios: resposta.data,
           };
           let b = this.state.listaCadastros;
@@ -244,38 +204,19 @@ class Login extends Component {
 
   cadastrarUsuario = async (values) => {
     this.setState({ clicouCadastrar: true });
-
-    var tipoTitulo = "";
     var pessoaId = 0;
     var entidade = this.state.clube_opcao_cadastrar;
     for (let i = 0; i < this.state.listaCadastros.length; i++) {
       const element = this.state.listaCadastros[i];
       if (element.entidade === entidade) {
-        tipoTitulo = element.tipoTitulo;
         pessoaId = element.pessoa_id;
       }
     }
 
     var tipoUsuario = "";
 
-    if (
-      tipoTitulo == "Patrimonial" ||
-      tipoTitulo == "PATRIMONIAL" ||
-      tipoTitulo == "Contribuinte" ||
-      tipoTitulo == "CONTRIBUINTE" ||
-      tipoTitulo == "CONTRIBUINTE COM DEPENDENTE" ||
-      tipoTitulo == "CONTRIBUINTE SEM DEPENDENTES" ||
-      tipoTitulo == "Temporario" ||
-      tipoTitulo == "TEMPORÁRIO" ||
-      tipoTitulo.toUpperCase() === "CONTRIBUINTE SEM DEPENDENTES"
-    ) {
-      tipoUsuario = "titular";
-    } else if (tipoTitulo == "dependente" || tipoTitulo == "DEPENDENTE") {
-      tipoUsuario = tipoTitulo;
-    } else {
-      tipoUsuario = "invalido";
-    }
-    if (tipoUsuario == "invalido") {
+    
+    if (tipoUsuario === "invalido") {
       this.setState({ tipoUsuarioInvalido: true });
       this.setState({ clicouCadastrar: false });
       return;
